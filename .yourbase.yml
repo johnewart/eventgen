@@ -11,3 +11,8 @@ build_targets:
       - poetry config virtualenvs.create false
       - poetry install --no-root
       - python run_tests.py tests/small None None None
+
+ci:
+  builds:
+    - name: default
+      build_target: default
