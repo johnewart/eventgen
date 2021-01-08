@@ -1,0 +1,13 @@
+dependencies:
+  build:
+    - python:3.7.3
+
+build_targets:
+  - name: default
+    commands:
+      - pip install --upgrade pip
+      - pip install pytest coverage pytest-cov
+      - pip install mock python-dateutil requests-futures lxml httplib2 urllib3 jinja2 boto3 docker
+      - poetry config virtualenvs.create false
+      - poetry install --no-root
+      - python run_tests.py tests/small None None None
