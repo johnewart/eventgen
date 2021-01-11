@@ -34,5 +34,5 @@ class TestTcpOutputPlugin(object):
             mock_requests.connect.return_value = True
 
             eventgen.start()
-            tcpoutput.s.connect.assert_called_with(("127.0.0.1", 9999))
+            tcpoutput.s.connect.assert_called_with((os.getenv("SPLUNK_HOST", "127.0.0.1"), 9999))
             assert tcpoutput.s.send.call_count == 5

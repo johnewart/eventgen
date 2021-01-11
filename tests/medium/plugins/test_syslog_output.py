@@ -26,7 +26,7 @@ class TestSyslogOutputPlugin(object):
 
                 sample = MagicMock()
                 sample.name = "test"
-                sample.syslogDestinationHost = "127.0.0.1"
+                sample.syslogDestinationHost = os.getenv("SPLUNK_HOST","127.0.0.1")
                 sample.syslogDestinationPort = 9999
                 syslogoutput = SyslogOutOutputPlugin(sample)
 
