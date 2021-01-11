@@ -6,6 +6,11 @@ build_targets:
   - name: default
     dependencies:
       containers:
+        redis:
+          image: redis
+          port_check:
+            port: 6379
+            timeout: 30
         splunk: 
           image: splunk/splunk:latest
           port_check:
@@ -16,6 +21,8 @@ build_targets:
             - SPLUNK_PASSWORD=password
     environment:
       - SPLUNK_IP={{ .Containers.IP "splunk" }}
+      - REDIS_HOST={{ .Containers.IP "redis" }}
+      - REDIS_PORT=6379
     commands:
       - pip install --upgrade pip
       - pip install poetry
@@ -24,6 +31,7 @@ build_targets:
       - poetry config virtualenvs.create false
       - poetry config virtualenvs.in-project false
       - poetry install --no-root
+      - bash run_services.sh
       - python run_tests.py tests/small tests/medium None None
 
 ci:
