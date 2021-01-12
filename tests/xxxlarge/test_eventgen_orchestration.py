@@ -51,57 +51,56 @@ class TestEventgenOrchestration(object):
     @classmethod
     def setup_class(cls):
         # Build the image from scratch
-        cls.client = APIClient(base_url="unix://var/run/docker.sock")
-        response = cls.client.build(
-            path=REPO_DIR,
-            dockerfile=os.path.join("dockerfiles", "Dockerfile"),
-            tag=IMAGE_NAME,
-            rm=True,
-            nocache=True,
-            pull=True,
-        )
-        for line in response:
-            print(line, end=" ")
-        # Create a network for both the controller and server to run in
-        cls.client.create_network(NETWORK_NAME, driver="bridge", attachable=True)
-        networking_config = cls.client.create_networking_config(
-            {NETWORK_NAME: cls.client.create_endpoint_config()}
-        )
-        # Start the controller
-        print("creating controller")
-        host_config = cls.client.create_host_config(
-            auto_remove=True, publish_all_ports=True
-        )
-        container = cls.client.create_container(
-            image=IMAGE_NAME,
-            command="controller",
-            host_config=host_config,
-            networking_config=networking_config,
-        )
-        cls.client.start(container["Id"])
-        TestEventgenOrchestration.controller_id = container["Id"]
-        print(container["Id"])
-        cls.controller_container = cls.client.inspect_container(container["Id"])
-        cls.controller_eventgen_webport = cls.controller_container["NetworkSettings"][
-            "Ports"
-        ]["9500/tcp"][0]["HostPort"]
-        # Start the server
-        print("creating server")
-        redis_host = container["Id"][:12]
-        container = cls.client.create_container(
-            image=IMAGE_NAME,
-            command="server",
-            environment=["REDIS_HOST={}".format(redis_host)],
-            host_config=host_config,
-            networking_config=networking_config,
-        )
-        cls.client.start(container["Id"])
-        TestEventgenOrchestration.server_id = container["Id"]
-        print(container["Id"])
-        cls.server_container = cls.client.inspect_container(container["Id"])
-        cls.server_eventgen_webport = cls.server_container["NetworkSettings"]["Ports"][
-            "9500/tcp"
-        ][0]["HostPort"]
+        # cls.client = APIClient(base_url="unix://var/run/docker.sock")
+        # response = cls.client.build(
+        #     path=REPO_DIR,
+        #     dockerfile=os.path.join("dockerfiles", "Dockerfile"),
+        #     tag=IMAGE_NAME,
+        #     rm=True,
+        #     nocache=True,
+        #     pull=True,
+        # )
+        # for line in response:
+        #     print(line, end=" ")
+        # # Create a network for both the controller and server to run in
+        # cls.client.create_network(NETWORK_NAME, driver="bridge", attachable=True)
+        # networking_config = cls.client.create_networking_config(
+        #     {NETWORK_NAME: cls.client.create_endpoint_config()}
+        # )
+        # # Start the controller
+        # print("creating controller")
+        # host_config = cls.client.create_host_config(
+        #     auto_remove=True, publish_all_ports=True
+        # )
+        # container = cls.client.create_container(
+        #     image=IMAGE_NAME,
+        #     command="controller",
+        #     host_config=host_config,
+        #     networking_config=networking_config,
+        # )
+        # cls.client.start(container["Id"])
+        # TestEventgenOrchestration.controller_id = container["Id"]
+        # print(container["Id"])
+        # cls.controller_container = cls.client.inspect_container(container["Id"])
+        # cls.controller_eventgen_webport = cls.controller_container["NetworkSettings"][
+        #     "Ports"
+        # ]["9500/tcp"][0]["HostPort"]
+        # # Start the server
+        # print("creating server")
+        # redis_host = container["Id"][:12]
+        # container = cls.client.create_container(
+        #     image=IMAGE_NAME,
+        #     command="server",
+        #     environment=["REDIS_HOST={}".format(redis_host)],
+        #     host_config=host_config,
+        #     networking_config=networking_config,
+        # )
+        # cls.client.start(container["Id"])
+        # TestEventgenOrchestration.server_id = container["Id"]
+        # print(container["Id"])
+        # cls.server_container = cls.client.inspect_container(container["Id"])
+        self.controller_eventgen_webport = 9500 
+        self.server_eventgen_webport = 9500
 
         # Wait for the controller to be available
         print("Waiting for Eventgen Controller to become available.")
@@ -129,10 +128,11 @@ class TestEventgenOrchestration(object):
 
     @classmethod
     def teardown_class(cls):
-        cls.client.remove_container(cls.server_container, v=True, force=True)
-        cls.client.remove_container(cls.controller_container, v=True, force=True)
-        cls.client.remove_image(IMAGE_NAME, force=True, noprune=False)
-        cls.client.remove_network(NETWORK_NAME)
+        pass
+        #cls.client.remove_container(cls.server_container, v=True, force=True)
+        #cls.client.remove_container(cls.controller_container, v=True, force=True)
+        #cls.client.remove_image(IMAGE_NAME, force=True, noprune=False)
+        #cls.client.remove_network(NETWORK_NAME)
 
     # Controller tests #
     def test_controller_root(self):
