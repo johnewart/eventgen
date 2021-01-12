@@ -27,6 +27,7 @@ class CantFindTemplate(Exception):
 
 class CantProcessTemplate(Exception):
     def __init__(self, msg):
+        # Change here
         """Exception raised when we / Jinja can't find the template
 
         :param msg: (str) The message to send back to the user
